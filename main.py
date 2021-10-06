@@ -2,6 +2,7 @@
 # E-Mail: joao.bertoncini@gmail.com
 # Github: plugns
 import os
+from tabulate import tabulate
 
 students = []
 
@@ -13,24 +14,39 @@ def screen_clear():
         _ = os.system('cls')
 
 
+def situation(average):
+    if average >= 7:
+        return 'Aprovado'
+    elif 4 <= average < 7:
+        return 'Exame'
+    elif average < 4:
+        return 'Reprovado'
+
+
 def menu():
     while True:
+        screen_clear()
         print('''Sistema de Notas v1.0''')
         print('''
             MENU:
-            [C] - Cadastrar Notas
-            [R] - Relatórios
-            [S] - Sair
+            [C] - CADASTRAR NOTAS
+            [L] - LISTAR NOTAS
+            [R] - RELATÓRIOS
+            [S] - SAIR
         ''')
         choice = str(input('Escolha uma opção: ')).upper()
         if choice == 'C':
             register()
+        elif choice == 'L':
+            list()
+        elif choice == 'R':
+            report()
         elif choice == 'S':
             exit(0)
 
 
 def register():
-    # screen_clear()
+    screen_clear()
     while True:
         name = ''
         while name == "":
@@ -61,7 +77,7 @@ def register():
             except ValueError:
                 print("Error: Nota invalida!")
 
-        average = (grade1 + grade2 + grade3) / 3
+        average = round((grade1 + grade2 + grade3) / 3, 2)
         students.append({
             'name': name,
             'sex': sex,
@@ -70,26 +86,107 @@ def register():
             'grade3': grade3,
             'average': average
         })
-        print('-------Resumo do Cadastro-------')
-        print('Nome: %s' % name)
-        print('Sexo Masculino' if sex == 'M' else 'Sexo Feminino')
-        print('Nota 1: %.2f' % grade1)
-        print('Nota 2: %.2f' % grade2)
-        print('Nota 2: %.2f' % grade3)
-        print('Média: %.2f' % average)
-        if average >= 7:
-            print('Aluno Aprovado')
-        elif 4 <= average < 7:
-            print('Aluno de Exame')
-        elif average < 4:
-            print('Aluno Reprovado')
-        print('-------------------------------- \n')
+        print('\n')
+        print('-----------------------------Resumo do Cadastro------------------------------')
+        print(tabulate([[
+            name,
+            'Masculino' if sex == 'M' else 'Feminino',
+            grade1,
+            grade2,
+            grade3,
+            average,
+            situation(average)
+            ]], headers=['Nome', 'Sexo', 'Nota 1', 'Nota 2', 'Nota 3', 'Média', 'Status']))
+        print('----------------------------------------------------------------------------')
         result = ''
         while result != "S" and result != "N":
             result = str(input('Cadastrar outro aluno(a) (S ou N): ')).upper()
         if result == 'N':
             break
     return
+
+def list():
+    screen_clear()
+    print('-----------------------------Resumo do Cadastro------------------------------')
+    list = []
+    for student in students:
+        s = situation(student['average'])
+        list.append([
+            student['name'],
+            'Masculino' if student['sex'] == 'M' else 'Feminino',
+            student['grade1'],
+            student['grade2'],
+            student['grade3'],
+            student['average'],
+            s
+        ])
+    print(tabulate(list, headers=['Nome', 'Sexo', 'Nota 1', 'Nota 2', 'Nota 3', 'Média', 'Status']))
+    print('----------------------------------------------------------------------------')
+    input('Pressione enter para continuar ')
+    return
+
+
+def report():
+    screen_clear()
+    total_students = len(students)
+    total_students_approved = 0
+    total_students_exam = 0
+    total_students_failed = 0
+    total_female_approved = 0
+    total_female_exam = 0
+    total_female_failed = 0
+    total_male_approved = 0
+    total_male_exam = 0
+    total_male_failed = 0   
+    for student in students:
+        if student['average'] >= 7:
+            total_students_approved += 1
+            if student['sex'] == 'F':
+                total_female_approved += 1
+            elif student['sex'] == 'M':
+                total_male_approved += 1
+        elif 4 <= student['average'] < 7:
+            total_students_exam += 1
+            if student['sex'] == 'F':
+                total_female_exam += 1
+            elif student['sex'] == 'M':
+                total_male_exam += 1           
+        elif student['average'] < 4:
+            total_students_failed += 1
+            if student['sex'] == 'F':
+                total_female_failed += 1
+            elif student['sex'] == 'M':
+                total_male_failed += 1   
+
+    if total_students_approved > 0:
+        percentage_approved = round((total_students_approved * 100) / total_students,2)
+    else:
+        percentage_approved = 0
+    if total_students_exam > 0:
+        percentage_exam = round((total_students_exam * 100) / total_students,2)
+    else:
+        percentage_exam = 0
+    if total_students_failed > 0:
+        percentage_failed = round((total_students_failed * 100) / total_students,2)
+    else:
+        percentage_failed = 0
+    print('-----------------------------------------------------------------------------')
+    print('TOTAL DE ALUNOS CADASTRADOS: %d' % total_students)
+    print('\n')
+    print('QUANTIDADE PORCENTUAL DE ALUNOS APROVADOS: ' + '{:.2f}'.format(percentage_approved) + '%')
+    print('QUANTIDADE PORCENTUAL DE ALUNOS DE EXAME: ' + '{:.2f}'.format(percentage_exam) + '%')
+    print('QUANTIDADE PORCENTUAL DE ALUNOS REPROVADOS: ' + '{:.2f}'.format(percentage_failed) + '%')
+    print('\n')
+    print('QUANTIDADE DE PESSOAS DO SEXO FEMININO APROVADAS: ' + '{}'.format(total_female_approved))
+    print('QUANTIDADE DE PESSOAS DO SEXO MASCULINO APROVADAS: ' + '{}'.format(total_male_approved))
+    print('QUANTIDADE DE PESSOAS DO SEXO FEMININO DE EXAME: ' + '{}'.format(total_female_exam))
+    print('QUANTIDADE DE PESSOAS DO SEXO MASCULINO DE EXAME: ' + '{}'.format(total_male_exam))
+    print('QUANTIDADE DE PESSOAS DO SEXO FEMININO REPROVADAS: ' + '{}'.format(total_female_failed))
+    print('QUANTIDADE DE PESSOAS DO SEXO MASCULINO RESPROVADAS: ' + '{}'.format(total_male_failed))
+    print('----------------------------------------------------------------------------')
+    input('Pressione enter para continuar ')
+    return
+
 
 if __name__ == '__main__':
     menu()
