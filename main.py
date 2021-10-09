@@ -1,8 +1,18 @@
+#-------------------------------------------------------
 # Aluno: João Paulo Scarebelo Bertoncini
 # E-Mail: joao.bertoncini@gmail.com
 # Github: plugns
+#-------------------------------------------------------
+# Instalando as dependencias
+# pip install tabulate
+# pip install names
+# pip install random
+#-------------------------------------------------------
 import os
 from tabulate import tabulate
+# usado para o mock
+import names
+import random
 
 students = []
 
@@ -187,6 +197,37 @@ def report():
     input('Pressione enter para continuar ')
     return
 
+def gen_students():
+    for i in range(15):
+        grade1 = random.randint(0,10)
+        grade2 = random.randint(0,10)
+        grade3 = random.randint(0,10)   
+        average = round((grade1 + grade2 + grade3) / 3, 2)
+        students.append({
+            'name': names.get_full_name(gender='female'),
+            'sex': 'F',
+            'grade1': grade1,
+            'grade2': grade2,
+            'grade3': grade3,
+            'average': average
+        })
+
+    for i in range(10):
+        grade1 = random.randint(0,10)
+        grade2 = random.randint(0,10)
+        grade3 = random.randint(0,10)   
+        average = round((grade1 + grade2 + grade3) / 3, 2)
+        students.append({
+            'name': names.get_full_name(gender='male'),
+            'sex': 'M',
+            'grade1': grade1,
+            'grade2': grade2,
+            'grade3': grade3,
+            'average': average
+        })
+
 
 if __name__ == '__main__':
+    # mock para gerar dados
+    gen_students()
     menu()
