@@ -3,14 +3,16 @@
 # E-Mail: joao.bertoncini@gmail.com
 # Github: plugns
 #-------------------------------------------------------
+# Como executar:
 # Instalando as dependencias
 # pip install tabulate
 # pip install names
 # pip install random
+# python3 main.py
 #-------------------------------------------------------
 import os
 from tabulate import tabulate
-# usado para o mock
+# usado gerar dados de teste (mock) 
 import names
 import random
 
@@ -229,5 +231,5 @@ def gen_students():
 
 if __name__ == '__main__':
     # mock para gerar dados
-    gen_students()
+    # gen_students()
     menu()
